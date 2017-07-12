@@ -1,7 +1,7 @@
 #define BLOCKSIZE (1<<12)
-#define CYCLE (1<<30)
+#define CYCLE (1<<26)
 
-int cycle_speed(int type, void *out, const void *in);
+int cycle_speed(int num, void *out, const void *in);
 
 int char_speed(int type, void *out, const void *in);
 int short_speed(int type, void *out, const void *in);

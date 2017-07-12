@@ -1,8 +1,8 @@
 #include <complex.h>
 #include "cpu_tests.h"
 
-int cycle_speed(int type, void *outvoid, const void *invoid) {
-    for (int i=0; i<CYCLE; i++) asm ("nop");
+int cycle_speed(int num, void *outvoid, const void *invoid) {
+    for (int i=0; i<num; i++) asm ("nop");
     return 0;
 }
 

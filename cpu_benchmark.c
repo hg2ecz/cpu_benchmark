@@ -15,23 +15,24 @@ double measure(int type, int (*test)(int type, void *, const void *)) {
 }
 
 void print_time_arithmetic(const char *name, int (*test)(int type, void *, const void *)) {
-    double eltime = measure(0, test);
-    printf("%11s(%2d byte) speed: %7.4f ns/instruction\n", name, varlength, eltime/CYCLE);
+    double eltime = measure(CYCLE, test);
+    printf("%15s (%2d byte) speed: %7.4f ns/instruction\n", name, varlength, eltime/CYCLE);
 }
 
 void print_time_mem(unsigned int log2size) {
     double eltime_read = measure(log2size, memread_speed);
     double eltime_write = measure(log2size, memwrite_speed);
     double eltime_move = measure(log2size, memmove_speed);
-    printf("memtest(%d) --> read: %7.4f ns/instr, write: %7.4f ns/instr, move: %7.4f ns/instr\n", log2size, eltime_read/CYCLE, eltime_write/CYCLE, eltime_move/CYCLE);
+    printf("memtest(%d --> %5d kB) --> read: %7.4f ns/instr, write: %7.4f ns/instr, move: %7.4f ns/instr\n",
+	log2size, (1<<log2size)/1024, eltime_read/CYCLE, eltime_write/CYCLE, eltime_move/CYCLE);
 }
 
 int main() {
     testa = malloc(1<<26);
     testb = malloc(1<<26);
     printf("\n  (CYCLE: %.3f million)\n", CYCLE/1000./1000.);
-    measure(0, cycle_speed);
-    measure(0, cycle_speed);
+    measure(CYCLE, cycle_speed);
+    measure(CYCLE, cycle_speed);
     print_time_arithmetic("cycle", cycle_speed);
 
     puts("");
