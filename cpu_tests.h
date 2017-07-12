@@ -1,5 +1,6 @@
 #define BLOCKSIZE (1<<12)
 #define CYCLE (1<<30)
+#define ITERNUM 8
 
 int cycle_speed(int type, void *out, const void *in);
 

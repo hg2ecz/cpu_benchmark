@@ -9,48 +9,43 @@ int cycle_speed(int type, void *outvoid, const void *invoid) {
 #define MAKE_FN_NAME(x) int x ## _speed (int type, void *outvoid, const void *invoid)
 #define FUNCTION_NAME(fnnamedef) MAKE_FN_NAME(fnnamedef)
 
-#define insert_compute_block(FUNCNAME, VARTYPE) \
+#define insert_compute_block(FUNCNAME, VARTYPE, INNERITER) \
 FUNCTION_NAME(FUNCNAME) { \
     const VARTYPE *in = (const VARTYPE *)invoid; \
     VARTYPE *out = (VARTYPE *)outvoid; \
     for (int i=0; i<CYCLE/BLOCKSIZE; i++) {\
 	for (int idx=0; idx<BLOCKSIZE; ) {\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-					     \
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
-	    out[idx]+=in[idx]*in[idx]; idx++;\
+	    for (int j=0; j<INNERITER; j++) { \
+		out[idx]+=in[idx]*in[idx]; \
+		idx++; \
+	    } \
 	}\
     } \
     return sizeof(VARTYPE);\
 }
 
-insert_compute_block(char, char)
-insert_compute_block(short, short)
-insert_compute_block(int, int)
-insert_compute_block(longlong, long long)
+insert_compute_block(char, char, ITERNUM)
+insert_compute_block(short, short, ITERNUM)
+insert_compute_block(int, int, ITERNUM)
+insert_compute_block(longlong, long long, ITERNUM)
 #if defined(__x86_64__)
-insert_compute_block(int128, __int128)
+insert_compute_block(int128, __int128, ITERNUM)
 #endif
 #if defined(__arm__) || defined(__aarch64__)
-insert_compute_block(half, __fp16)
-insert_compute_block(complexhalf, _Complex _Float16)
+insert_compute_block(half, __fp16, ITERNUM)
+insert_compute_block(complexhalf, _Complex _Float16, ITERNUM/2)
 #endif
-insert_compute_block(float, float)
-insert_compute_block(double, double)
-insert_compute_block(longdouble, long double)
+insert_compute_block(float, float, ITERNUM)
+insert_compute_block(double, double, ITERNUM)
+insert_compute_block(longdouble, long double, ITERNUM)
 #if defined(__x86_64__)
 # include <quadmath.h>
-insert_compute_block(float128, __float128)
-insert_compute_block(complex128, __complex128)
+insert_compute_block(float128, __float128, ITERNUM)
+insert_compute_block(complex128, __complex128, ITERNUM/2)
 #endif
 
-insert_compute_block(complexfloat, complex float)
-insert_compute_block(complexdouble, complex double)
+insert_compute_block(complexfloat, complex float, ITERNUM/2)
+insert_compute_block(complexdouble, complex double, ITERNUM/2)
 
 
 
