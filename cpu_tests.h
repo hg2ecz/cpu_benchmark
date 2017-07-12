@@ -15,4 +15,11 @@ int double_speed(int type, void *out, const void *in);
 int longdouble_speed(int type, void *out, const void *in);
 int float128_speed(int type, void *out, const void *in); // x86_64
 
-int mem_speed(int type, void *out, const void *in);
+int complexhalf_speed(int type, void *out, const void *in);
+int complexfloat_speed(int type, void *out, const void *in);
+int complexdouble_speed(int type, void *out, const void *in);
+int complex128_speed(int type, void *out, const void *in);
+
+int memread_speed(int type, void *out, const void *in);
+int memwrite_speed(int type, void *out, const void *in);
+int memmove_speed(int type, void *out, const void *in);

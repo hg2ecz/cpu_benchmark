@@ -4,53 +4,78 @@
 #include "cpu_tests.h"
 
 static double *testa, *testb;
-void print_time(int type, const char *name, int (*test)(int type, void *, const void *)) {
+static int varlength;
+
+double measure(int type, int (*test)(int type, void *, const void *)) {
     struct timespec gstart, gend;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &gstart);
-    test(type, testa, testb);
+    varlength = test(type, testa, testb);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &gend);
+    return 1000.*1000.*1000.*(gend.tv_sec - gstart.tv_sec) + (gend.tv_nsec - gstart.tv_nsec);
+}
 
-    double eltime = 1000.*1000.*1000.*(gend.tv_sec - gstart.tv_sec) + (gend.tv_nsec - gstart.tv_nsec);
-    if (!type) printf("%17s: %7.5f ns/instruction\n", name, eltime/CYCLE);
-    else printf("%17s(%d): %7.5f ns/instruction\n", name, type, eltime/CYCLE);
+void print_time_arithmetic(const char *name, int (*test)(int type, void *, const void *)) {
+    double eltime = measure(0, test);
+    printf("%11s(%2d byte) speed: %7.4f ns/instruction\n", name, varlength, eltime/CYCLE);
+}
+
+void print_time_mem(unsigned int log2size) {
+    double eltime_read = measure(log2size, memread_speed);
+    double eltime_write = measure(log2size, memwrite_speed);
+    double eltime_move = measure(log2size, memmove_speed);
+    printf("memtest(%d) --> read: %7.4f ns/instr, write: %7.4f ns/instr, move: %7.4f ns/instr\n", log2size, eltime_read/CYCLE, eltime_write/CYCLE, eltime_move/CYCLE);
 }
 
 int main() {
     testa = malloc(1<<26);
     testb = malloc(1<<26);
     printf("\nCYCLE: %.3f million\n", CYCLE/1000./1000.);
-    print_time(0, "cycle speed", cycle_speed);
+    print_time_arithmetic("cycle", cycle_speed);
+
     puts("");
-    print_time(0, "char speed", char_speed);
-    print_time(0, "short speed", short_speed);
-    print_time(0, "int speed", int_speed);
-    print_time(0, "long long speed", longlong_speed);
+    print_time_arithmetic("char", char_speed);
+    print_time_arithmetic("short", short_speed);
+    print_time_arithmetic("int", int_speed);
+    print_time_arithmetic("long long", longlong_speed);
 #if defined(__x86_64__)
-    print_time(0, "int128 speed", int128_speed);
+    print_time_arithmetic("int128", int128_speed);
 #endif
+
     puts("");
 #if defined(__arm__) || defined(__aarch64__)
-    print_time(0, "half speed", half_speed);
+    print_time_arithmetic("half", half_speed);
 #endif
-    print_time(0, "float speed", float_speed);
-    print_time(0, "double speed", double_speed);
-    print_time(0, "long double speed", longdouble_speed);
+    print_time_arithmetic("float", float_speed);
+    print_time_arithmetic("double", double_speed);
+    print_time_arithmetic("long double", longdouble_speed);
 #if defined(__x86_64__)
-    print_time(0, "float128 speed", float128_speed);
+    print_time_arithmetic("float128", float128_speed);
 #endif
+
     puts("");
-    print_time(10, "mem speed", mem_speed);
-    print_time(12, "mem speed", mem_speed);
-    print_time(14, "mem speed", mem_speed);
-    print_time(15, "mem speed", mem_speed);
-    print_time(16, "mem speed", mem_speed);
-    print_time(17, "mem speed", mem_speed);
-    print_time(18, "mem speed", mem_speed);
-    print_time(19, "mem speed", mem_speed);
-    print_time(20, "mem speed", mem_speed);
-    print_time(22, "mem speed", mem_speed);
-    print_time(24, "mem speed", mem_speed);
-    print_time(26, "mem speed", mem_speed);
+#if defined(__arm__) || defined(__aarch64__)
+    print_time_arithmetic("complexhalf", complexhalf_speed);
+#endif
+    print_time_arithmetic("complex float", complexfloat_speed);
+    print_time_arithmetic("complex double", complexdouble_speed);
+#if defined(__x86_64__)
+    print_time_arithmetic("complex128", complex128_speed);
+#endif
+
+
+    puts("");
+    print_time_mem(10);
+    print_time_mem(12);
+    print_time_mem(14);
+    print_time_mem(15);
+    print_time_mem(16);
+    print_time_mem(17);
+    print_time_mem(18);
+    print_time_mem(19);
+    print_time_mem(20);
+    print_time_mem(22);
+    print_time_mem(24);
+    print_time_mem(26);
 
     free(testb);
     free(testa);
