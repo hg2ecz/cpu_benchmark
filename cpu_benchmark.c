@@ -29,7 +29,9 @@ void print_time_mem(unsigned int log2size) {
 int main() {
     testa = malloc(1<<26);
     testb = malloc(1<<26);
-    printf("\nCYCLE: %.3f million\n", CYCLE/1000./1000.);
+    printf("\n  (CYCLE: %.3f million)\n", CYCLE/1000./1000.);
+    measure(0, cycle_speed);
+    measure(0, cycle_speed);
     print_time_arithmetic("cycle", cycle_speed);
 
     puts("");
