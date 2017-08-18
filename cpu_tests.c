@@ -90,7 +90,7 @@ int longdouble_speed(int type, void *outvoid, const void *invoid) {
 }
 
 #if defined(__x86_64__)
-# include <quadmath>
+# include <quadmath.h>
 int float128_speed(int type, void *outvoid, const void *invoid) {
     const __float128 *in = (const __float128 *)invoid;
     __float128 *out = (__float128 *)outvoid;
