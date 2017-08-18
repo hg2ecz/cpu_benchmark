@@ -25,19 +25,28 @@ int main() {
     print_time(0, "short speed", short_speed);
     print_time(0, "int speed", int_speed);
     print_time(0, "long long speed", longlong_speed);
+#if defined(__x86_64__)
+    print_time(0, "int128 speed", int128_speed);
+#endif
     puts("");
-#if defined(__ARM__) || defined(__AARCH64__)
+#if defined(__arm__) || defined(__aarch64__)
     print_time(0, "half speed", half_speed);
 #endif
     print_time(0, "float speed", float_speed);
     print_time(0, "double speed", double_speed);
     print_time(0, "long double speed", longdouble_speed);
+#if defined(__x86_64__)
+    print_time(0, "float128 speed", float128_speed);
+#endif
     puts("");
     print_time(10, "mem speed", mem_speed);
     print_time(12, "mem speed", mem_speed);
     print_time(14, "mem speed", mem_speed);
+    print_time(15, "mem speed", mem_speed);
     print_time(16, "mem speed", mem_speed);
+    print_time(17, "mem speed", mem_speed);
     print_time(18, "mem speed", mem_speed);
+    print_time(19, "mem speed", mem_speed);
     print_time(20, "mem speed", mem_speed);
     print_time(22, "mem speed", mem_speed);
     print_time(24, "mem speed", mem_speed);
