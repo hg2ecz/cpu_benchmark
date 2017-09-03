@@ -6,11 +6,8 @@ int cycle_speed(int num, void *outvoid, const void *invoid) {
     return 0;
 }
 
-#define MAKE_FN_NAME(x) int x ## _speed (int type, void *outvoid, const void *invoid)
-#define FUNCTION_NAME(fnnamedef) MAKE_FN_NAME(fnnamedef)
-
 #define insert_compute_block(FUNCNAME, VARTYPE, INNERITER) \
-FUNCTION_NAME(FUNCNAME) { \
+  int FUNCNAME ## _speed(int type, void *outvoid, const void *invoid) { \
     const VARTYPE *in = (const VARTYPE *)invoid; \
     VARTYPE *out = (VARTYPE *)outvoid; \
     for (int i=0; i<CYCLE/BLOCKSIZE; i++) {\
@@ -108,6 +105,7 @@ int memwrite_speed(int type, void *outvoid, const void *invoid) {
 int memmove_speed(int type, void *outvoid, const void *invoid) {
     const int *in = (const int *)invoid;
     int *out = (int *)outvoid;
+    if ( (1<<type) > CYCLE) return -1;
     const int mask = ( (1<<type)/sizeof(int) )-1;
     for (int idx=0, i=0; i<CYCLE>>6; i++) {
 	memmove8(); memmove8(); memmove8(); memmove8(); // 32
