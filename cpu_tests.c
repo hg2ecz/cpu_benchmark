@@ -42,7 +42,7 @@ int cycle_speed(int num, void *restrict outvoid, const void *restrict avoid, con
     } \
     out[0]=outreg[0]; \
     out[1]=outreg[1]; \
-    return sizeof(VARTYPE);\
+    return 2*sizeof(VARTYPE);\
 }
 
 insert_compute_block(char, char, ITERNUM)
