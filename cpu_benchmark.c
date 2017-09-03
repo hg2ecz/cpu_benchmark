@@ -3,18 +3,18 @@
 #include <malloc.h>
 #include "cpu_tests.h"
 
-static double *testa, *testb;
+static double *out, *testa, *testb;
 static int varlength;
 
-double measure(int type, int (*test)(int type, void *, const void *)) {
+double measure(int type, int (*test)(int type, void *restrict out, const void *restrict a, const void *restrict b)) {
     struct timespec gstart, gend;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &gstart);
-    varlength = test(type, testa, testb);
+    varlength = test(type, out, testa, testb);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &gend);
     return 1000.*1000.*1000.*(gend.tv_sec - gstart.tv_sec) + (gend.tv_nsec - gstart.tv_nsec);
 }
 
-void print_time_arithmetic(const char *name, int (*test)(int type, void *, const void *)) {
+void print_time_arithmetic(const char *name, int (*test)(int type, void *restrict out, const void *restrict a, const void *restrict b)) {
     double eltime = measure(CYCLE, test);
     printf("%15s (%2d byte) speed: %7.4f ns/instruction\n", name, varlength, eltime/CYCLE);
 }
@@ -28,6 +28,7 @@ void print_time_mem(unsigned int log2size) {
 }
 
 int main() {
+    out = malloc(1<<26);
     testa = malloc(1<<26);
     testb = malloc(1<<26);
     printf("\n  (CYCLE: %.3f million)\n", CYCLE/1000./1000.);
@@ -58,11 +59,15 @@ int main() {
     puts("");
 #if defined(__arm__) || defined(__aarch64__)
     print_time_arithmetic("complexhalf", complexhalf_speed);
+    print_time_arithmetic("half2cmplx", half2cmplx_speed);
 #endif
     print_time_arithmetic("complex float", complexfloat_speed);
+    print_time_arithmetic("float2cmplx", float2cmplx_speed);
     print_time_arithmetic("complex double", complexdouble_speed);
+    print_time_arithmetic("double2cmplx", double2cmplx_speed);
 #if defined(__x86_64__)
     print_time_arithmetic("complex128", complex128_speed);
+    print_time_arithmetic("float128_2cmplx", float128_2cmplx_speed);
 #endif
 
 
@@ -82,5 +87,6 @@ int main() {
 
     free(testb);
     free(testa);
+    free(out);
     return 0;
 }
