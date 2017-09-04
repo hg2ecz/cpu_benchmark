@@ -15,7 +15,7 @@ double measure(int type, int num, int (*test)(int type, void *restrict out, cons
 }
 
 void print_time_arithmetic(const char *name, int (*test)(int type, void *restrict out, const void *restrict a, const void *restrict b)) {
-    double eltime = measure(0, CYCLE/BLOCKSIZE, test);
+    double eltime = measure(BLOCKSIZE, CYCLE/BLOCKSIZE, test);
     printf("%15s (%2d byte) speed: %7.4f ns/instruction\n", name, varlength, eltime/CYCLE);
 }
 

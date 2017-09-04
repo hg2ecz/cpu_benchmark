@@ -9,6 +9,9 @@ endif
 ifeq ($(shell uname -m), armv7l)
     PARAMS_CPU = -mcpu=cortex-a5 -mfpu=neon-fp16 -mfp16-format=ieee -DITERNUM=4
 endif
+ifeq ($(shell uname -m), aarch64)
+    PARAMS_CPU = -march=native -DITERNUM=4
+endif
 CFLAGS+= $(PARAMS_CPU)
 
 LDFLAGS=-lm -s
