@@ -6,23 +6,23 @@
 static double *out, *testa, *testb;
 static int varlength;
 
-double measure(int type, int (*test)(int type, void *restrict out, const void *restrict a, const void *restrict b)) {
+double measure(int type, int num, int (*test)(int type, void *restrict out, const void *restrict a, const void *restrict b)) {
     struct timespec gstart, gend;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &gstart);
-    varlength = test(type, out, testa, testb);
+    for (int i=0; i<num; i++) varlength = test(type, out, testa, testb);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &gend);
     return 1000.*1000.*1000.*(gend.tv_sec - gstart.tv_sec) + (gend.tv_nsec - gstart.tv_nsec);
 }
 
 void print_time_arithmetic(const char *name, int (*test)(int type, void *restrict out, const void *restrict a, const void *restrict b)) {
-    double eltime = measure(CYCLE, test);
+    double eltime = measure(0, CYCLE/BLOCKSIZE, test);
     printf("%15s (%2d byte) speed: %7.4f ns/instruction\n", name, varlength, eltime/CYCLE);
 }
 
 void print_time_mem(unsigned int log2size) {
-    double eltime_read = measure(log2size, memread_speed);
-    double eltime_write = measure(log2size, memwrite_speed);
-    double eltime_move = measure(log2size, memmove_speed);
+    double eltime_read = measure(log2size, 1, memread_speed);
+    double eltime_write = measure(log2size, 1, memwrite_speed);
+    double eltime_move = measure(log2size, 1, memmove_speed);
     printf("memtest(%d --> %5d kB) --> read: %7.4f ns/instr, write: %7.4f ns/instr, move: %7.4f ns/instr\n",
 	log2size, (1<<log2size)/1024, eltime_read/CYCLE, eltime_write/CYCLE, eltime_move/CYCLE);
 }
@@ -31,9 +31,11 @@ int main() {
     out = malloc(1<<26);
     testa = malloc(1<<26);
     testb = malloc(1<<26);
+
+
     printf("\n  (CYCLE: %.3f million)\n", CYCLE/1000./1000.);
-    measure(CYCLE, cycle_speed);
-    measure(CYCLE, cycle_speed);
+    measure(CYCLE, 1, cycle_speed);
+    measure(CYCLE, 1, cycle_speed);
     print_time_arithmetic("cycle", cycle_speed);
 
     puts("");

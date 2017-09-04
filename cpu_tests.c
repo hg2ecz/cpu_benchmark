@@ -12,12 +12,10 @@ int cycle_speed(int num, void *restrict outvoid, const void *restrict avoid, con
     const VARTYPE *b = (const VARTYPE *)bvoid; \
     VARTYPE *out = (VARTYPE *)outvoid; \
     VARTYPE outreg = 0; \
-    for (int i=0; i<CYCLE/BLOCKSIZE; i++) { \
-	for (int idx=0; idx<BLOCKSIZE; ) { \
-	    for (int j=0; j<INNERITER; j++) { \
-		outreg+=a[idx]*b[idx]; \
-		idx++; \
-	    } \
+    for (int idx=0; idx<BLOCKSIZE; ) { \
+	for (int j=0; j<INNERITER; j++) { \
+	outreg+=a[idx]*b[idx]; \
+	idx++; \
 	} \
     } \
     out[0]=outreg; \
@@ -31,13 +29,11 @@ int cycle_speed(int num, void *restrict outvoid, const void *restrict avoid, con
     const VARTYPE *b = (const VARTYPE *)bvoid; \
     VARTYPE *out = (VARTYPE *)outvoid; \
     VARTYPE outreg[2] = {0, 0}; \
-    for (int i=0; i<CYCLE/BLOCKSIZE; i++) { \
-	for (int idx=0; idx<2*BLOCKSIZE; ) { \
-	    for (int j=0; j<INNERITER; j++) { \
-		outreg[0]+=a[idx]*b[idx] - a[idx+1]*b[idx+1]; \
-		outreg[1]+=a[idx]*b[idx+1] + a[idx+1]*b[idx]; \
-		idx+=2; \
-	    } \
+    for (int idx=0; idx<2*BLOCKSIZE; ) { \
+	for (int j=0; j<INNERITER; j++) { \
+	    outreg[0]+=a[idx]*b[idx] - a[idx+1]*b[idx+1]; \
+	    outreg[1]+=a[idx]*b[idx+1] + a[idx+1]*b[idx]; \
+	    idx+=2; \
 	} \
     } \
     out[0]=outreg[0]; \
