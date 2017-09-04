@@ -53,7 +53,7 @@ insert_compute_block(longlong, long long, ITERNUM)
 insert_compute_block(int128, __int128, ITERNUM)
 #endif
 #if defined(__arm__) || defined(__aarch64__)
-insert_compute_block(half, _Float16, ITERNUM)
+insert_compute_block(half, __fp16, ITERNUM)
 #endif
 insert_compute_block(float, float, ITERNUM)
 insert_compute_block(double, double, ITERNUM)
@@ -65,8 +65,10 @@ insert_compute_block(float128, __float128, ITERNUM)
 
 // complex
 #if defined(__arm__) || defined(__aarch64__)
-insert_compute_block(complexhalf, complex _Float16, ITERNUM/2)
-insert_compute_complexblock(half2cmplx, _Float16, ITERNUM/2) // from std half
+# if __GNUC__ >= 7
+    insert_compute_block(complexhalf, complex _Float16, ITERNUM/2)
+# endif
+insert_compute_complexblock(half2cmplx, __fp16, ITERNUM/2) // from std half
 #endif
 
 insert_compute_block(complexfloat, complex float, ITERNUM/2)

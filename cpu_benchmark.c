@@ -58,7 +58,9 @@ int main() {
 
     puts("");
 #if defined(__arm__) || defined(__aarch64__)
+# if __GNUC__ >= 7
     print_time_arithmetic("complexhalf", complexhalf_speed);
+# endif
     print_time_arithmetic("half2cmplx", half2cmplx_speed);
 #endif
     print_time_arithmetic("complex float", complexfloat_speed);
