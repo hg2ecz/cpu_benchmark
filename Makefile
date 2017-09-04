@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS =-Wall -Ofast
 CFLAGS += -funroll-all-loops
 
-PARAMS_CPU = -march=native -DITERNUM=16
+PARAMS_CPU = -march=native -DITERNUM=4
 ifeq ($(shell uname -m), armv6l)
     PARAMS_CPU = -march=native -mfp16-format=ieee
 endif
